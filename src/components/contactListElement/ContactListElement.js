@@ -1,19 +1,22 @@
 import PropTypes from 'prop-types';
 import css from './css/contactListElement.module.css';
 import { useDispatch } from 'react-redux';
-import { deleteContacts } from '../../redux/operations';
+import { deleteContacts, fetchContacts } from '../../redux/operations';
 
-function ContactListElement({ id, name, number }) {
+function ContactListElement({ id, name, email, phone }) {
   const dispatch = useDispatch();
 
   const deleteContact = contactId => {
-    dispatch(deleteContacts(contactId));
+    // dispatch(deleteContacts(contactId));  так было ранее 15.06.24 в 18.50
+    dispatch(deleteContacts(contactId)).then(() => {
+      dispatch(fetchContacts()); // Обновляем список контактов после удаления
+    });
   };
 
   return (
     <li className={css.liContactList}>
       <p>
-        {name}: {number}
+        {name}: {phone}, {email}
       </p>
       <button
         className={css.btnDelete}
@@ -29,7 +32,8 @@ function ContactListElement({ id, name, number }) {
 ContactListElement.propTypes = {
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  number: PropTypes.string.isRequired,
+  phone: PropTypes.string.isRequired,
+  email: PropTypes.string.isRequired,
 };
 
 export default ContactListElement;

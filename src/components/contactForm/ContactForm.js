@@ -6,7 +6,8 @@ import { selectContacts } from '../../redux/selectors';
 
 const ContactForm = () => {
   const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
 
   const contacts = useSelector(selectContacts);
   console.log(contacts);
@@ -16,18 +17,24 @@ const ContactForm = () => {
     dispatch(fetchContacts());
   }, [dispatch]);
 
-  const addContact = (name, number) => {
+  const addContact = (name, email, phone) => {
     if (
       contacts.find(
         contact => contact.name.toLowerCase() === name.toLowerCase()
       )
     ) {
       alert(`${name} is already in contacts.`);
-    } else if (contacts.find(contact => contact.number === number)) {
-      alert(`${number} is already in contacts.`);
+    } else if (contacts.find(contact => contact.email === email)) {
+      alert(`${email} is already in contacts.`);
+    } else if (contacts.find(contact => contact.phone === phone)) {
+      alert(`${phone} is already in contacts.`);
     } else {
-      const contact = { name, number };
-      dispatch(addContacts(contact));
+      const contact = { name, email, phone };
+      // dispatch(addContacts(contact)); так было ранее 15.06.24 в 18.47
+
+      dispatch(addContacts(contact)).then(() => {
+        dispatch(fetchContacts()); // Обновляем список контактов после добавления
+      });
     }
   };
 
@@ -36,10 +43,12 @@ const ContactForm = () => {
 
     console.log(name);
     console.log(value);
-    console.log(name === 'number');
+    console.log(name === 'phone');
 
-    if (name === 'number') {
-      setNumber(value);
+    if (name === 'phone') {
+      setPhone(value);
+    } else if (name === 'email') {
+      setEmail(value);
     } else {
       setName(value);
     }
@@ -48,10 +57,11 @@ const ContactForm = () => {
   const handleSubmit = event => {
     event.preventDefault();
 
-    addContact(name, number);
+    addContact(name, email, phone);
 
     setName('');
-    setNumber('');
+    setEmail('');
+    setPhone('');
   };
 
   return (
@@ -70,12 +80,25 @@ const ContactForm = () => {
         />
       </label>
       <label className={css.labelStyle}>
+        email
+        <input
+          className={css.inputName}
+          type="email"
+          name="email"
+          value={email}
+          // pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+          title="The email should look like client@yyyy.yyy"
+          required
+          onChange={handleChange}
+        />
+      </label>
+      <label className={css.labelStyle}>
         Number
         <input
           className={css.inputName}
           type="tel"
-          name="number"
-          value={number}
+          name="phone"
+          value={phone}
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
