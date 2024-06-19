@@ -26,7 +26,7 @@ const App = () => {
         <ContactForm />
         <h2>Contacts</h2>
         <Filter />
-        {isLoadingApp && <Loader />}
+        {isLoadingApp && <Loader message="Loading. Apologies, I am using a free service for my backend, so there may be a slight delay. Thank you for your patience."/>}
         <ContactList />
       </div>
     </div>
